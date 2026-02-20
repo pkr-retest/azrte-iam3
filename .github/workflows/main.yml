@@ -24,7 +24,7 @@ jobs:
         id: get_blob
         run: |
           blob_name=$(az storage blob list \
-            --account-name iamazurelab393e107bc \
+            --account-name iamazurelab33b6d0d3d \
             --container-name flag \
             --auth-mode login \
             --query '[0].name' -o tsv)
@@ -33,7 +33,7 @@ jobs:
       - name: Download flag blob
         run: |
           az storage blob download \
-            --account-name iamazurelab393e107bc \
+            --account-name iamazurelab33b6d0d3d \
             --container-name flag \
             --name ${{ steps.get_blob.outputs.blob_name }} \
             --file flag.txt \
