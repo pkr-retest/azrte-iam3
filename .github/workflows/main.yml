@@ -1,0 +1,43 @@
+name: IAM Lab 03
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # Needed for OIDC
+  contents: read
+
+jobs:
+  verify-access:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Azure login using federated credential
+        uses: azure/login@v1
+        with:
+          client-id: 5b250605-063c-4366-82a0-f1640a241110
+          tenant-id: fdd066e1-ee37-49bc-b08f-d0e152119b04
+          subscription-id: c5e1404b-0082-43f7-a3f0-1fba22df2114
+          enable-AzPSSession: true
+
+      - name: Get blob name dynamically
+        id: get_blob
+        run: |
+          blob_name=$(az storage blob list \
+            --account-name iamazurelab393e107bc \
+            --container-name flag \
+            --auth-mode login \
+            --query '[0].name' -o tsv)
+          echo "blob_name=$blob_name" >> $GITHUB_OUTPUT
+
+      - name: Download flag blob
+        run: |
+          az storage blob download \
+            --account-name iamazurelab393e107bc \
+            --container-name flag \
+            --name ${{ steps.get_blob.outputs.blob_name }} \
+            --file flag.txt \
+            --auth-mode login
+
+      - name: Display flag
+        run: cat flag.txt
